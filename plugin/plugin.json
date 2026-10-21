@@ -1,0 +1,12 @@
+{
+  "name": "antigravity-mobile-manager",
+  "displayName": "Antigravity Mobile Manager",
+  "description": "Controlla Google Antigravity dallo smartphone via LAN o Hotspot PC (porta 8420) tramite PWA o App Android: notifiche in tempo reale, approvazione/rifiuto comandi (PreToolUse), invio nuovi prompt e monitoraggio progetti e subagenti.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Avvia il server Antigravity Mobile Manager sulla porta 8420",
+    "Mostra gli indirizzi IP LAN e Hotspot PC per connettere lo smartphone",
+    "Simula una richiesta di conferma remota sullo smartphone"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "_copyright": "Copyright (c) 2026 Rubens Rainelli. All rights reserved. Licensed under PEFL v1.0.",
+  "name": "Antigravity Mobile Manager",
+  "short_name": "AGY Mobile",
+  "description": "Controllo remoto LAN & Hotspot PC (porta 8420) per Google Antigravity IDE: notifiche, conferme e prompt.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0f19",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

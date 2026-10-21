@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command|Bash|edit_file|write_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "antigravity-mobile-manager hook pre-tool",
+            "timeout": 190
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "antigravity-mobile-manager hook stop",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

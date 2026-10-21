@@ -1,0 +1,291 @@
+<!--
+  Personal and Educational Free License (PEF License / PEFL)
+  Version 1.0 - 2026-05-26
+  Copyright (c) 2026 Rubens Rainelli
+
+  Contact Details:
+    Email: rubens@rainelli.it
+    GitHub: https://github.com/RubensRainelli/
+    Tel: (+39) 342 811 5882
+
+  Personal and educational free use permitted.
+  Corporate, business or enterprise use prohibited without written authorization and fee.
+  The full license can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b0f19" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <title>Antigravity Mobile Manager — Rubens Rainelli</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- MODAL EULA OBBLIGATORIO IN PRIMO PIANO (PEFL v1.0 - CLAUSOLA 3) -->
+  <div id="pefl-modal" class="modal-backdrop">
+    <div class="modal modal-large pefl-modal-box">
+      <div class="modal-header">
+        <div>
+          <h3>Personal and Educational Free License (PEFL v1.0)</h3>
+          <small class="text-muted">Copyright (c) 2026 Rubens Rainelli • Approvazione Obbligatoria (Clausola 3)</small>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-secondary btn-sm" onclick="switchPeflLang('it')">IT</button>
+          <button class="btn btn-secondary btn-sm" onclick="switchPeflLang('en')">EN</button>
+        </div>
+      </div>
+
+      <div class="pefl-author-bar">
+        <strong>Autore / Author:</strong> Rubens Rainelli &bull;
+        <a href="mailto:rubens@rainelli.it">rubens@rainelli.it</a> &bull;
+        <a href="https://github.com/RubensRainelli/" target="_blank" rel="noopener">GitHub</a> &bull;
+        <span>Tel: (+39) 342 811 5882</span>
+      </div>
+
+      <pre id="pefl-license-text" class="artifact-viewer pefl-text-box"></pre>
+
+      <label class="pefl-checkbox-row">
+        <input type="checkbox" id="pefl-remember-7d" checked />
+        <span>Ricorda la mia approvazione su questo dispositivo per 7 giorni (Clausola 3 PEFL v1.0)</span>
+      </label>
+
+      <div class="modal-actions" style="margin-top:10px;">
+        <button type="button" class="btn btn-danger" onclick="declinePeflLicense()">Rifiuto / Decline</button>
+        <button type="button" class="btn btn-success" onclick="acceptPeflLicense()">✓ Accetto la Licenza PEFL v1.0</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHERMATA DI BLOCCO SE LA LICENZA PEFL VIENE RIFIUTATA -->
+  <div id="pefl-declined-screen" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3>Accesso Negato — Licenza PEFL v1.0 Non Accettata</h3>
+      <p class="section-hint" style="margin-top:10px;">
+        In conformità alla Clausola 3 della <strong>Personal and Educational Free License (PEFL v1.0)</strong> di <strong>Rubens Rainelli</strong>, l'utilizzo del software richiede l'accettazione esplicita della licenza.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="showPeflModal(true)">Rivedi Licenza PEFL v1.0</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER SUPERIORE -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="status-dot" id="sse-dot" title="Stato connessione col PC"></span>
+      <div>
+        <h1>Antigravity Mobile Manager</h1>
+        <small id="server-info">Connessione al PC (:8420)...</small>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-secondary btn-sm" onclick="openServerConfigModal()" title="Configura IP PC">🖧 PC</button>
+      <button class="btn btn-primary btn-sm" onclick="openNewConversationModal()">+ Prompt</button>
+    </div>
+  </header>
+
+  <!-- BANNER PERMESSI NOTIFICHE BROWSER (Mostrato se non ancora attivate) -->
+  <div id="notif-permission-banner" class="notif-banner hidden">
+    <span>🔔 Attiva le notifiche Browser per ricevere avvisi e conferme dal PC</span>
+    <button class="btn btn-primary btn-sm" onclick="requestBrowserNotificationPermission()">Attiva Ora</button>
+  </div>
+
+  <!-- BANNER GLOBALE CONFERME URGENTI -->
+  <div id="urgent-confirm-banner" class="urgent-banner hidden"></div>
+
+  <!-- CONTENUTO PRINCIPALE SINGLE PAGE APPLICATION -->
+  <main class="main-container">
+    <!-- TAB 1: PROGETTI E AGENTI -->
+    <section id="tab-agents" class="tab-view active">
+      <div class="projects-strip" id="projects-filter"></div>
+      <div id="conversations-list" class="card-list"></div>
+    </section>
+
+    <!-- VISTA DETTAGLIO CONVERSAZIONE -->
+    <section id="conversation-detail-view" class="detail-view hidden">
+      <div class="detail-header">
+        <button class="btn btn-ghost btn-sm" onclick="closeConversationDetail()">← Indietro</button>
+        <div class="detail-title-wrap">
+          <strong id="detail-project-name">Progetto</strong>
+          <small id="detail-conv-id"></small>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="refreshCurrentConversation()">↻</button>
+      </div>
+
+      <div id="detail-artifacts-bar" class="artifacts-bar hidden"></div>
+      <div id="detail-steps" class="chat-stream"></div>
+
+      <form class="prompt-bar" onsubmit="sendPromptToCurrent(event)">
+        <textarea id="detail-prompt-input" rows="2" placeholder="Scrivi un prompt o rispondi all'agente..."></textarea>
+        <button type="submit" class="btn btn-primary" id="detail-send-btn">Invia</button>
+      </form>
+    </section>
+
+    <!-- TAB 2: RICHIESTE DI CONFERMA -->
+    <section id="tab-confirmations" class="tab-view">
+      <div class="section-header">
+        <h2>Richieste di Conferma</h2>
+        <button class="btn btn-secondary btn-sm" onclick="triggerTestConfirmation()">Simula Conferma</button>
+      </div>
+      <p class="section-hint">
+        Quando Antigravity esegue un comando o modifica un file, l'hook <code>PreToolUse</code> mette in pausa l'agente finché non approvi o rifiuti qui o direttamente dalla notifica Browser/PWA.
+      </p>
+      <div id="confirmations-list" class="card-list"></div>
+    </section>
+
+    <!-- TAB 3: NOTIFICHE BROWSER -->
+    <section id="tab-notifications" class="tab-view">
+      <div class="section-header">
+        <h2>Notifiche & Avvisi</h2>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-secondary btn-sm" onclick="sendTestBrowserNotification()">Test Notifica</button>
+          <button class="btn btn-primary btn-sm" onclick="requestBrowserNotificationPermission()">Permessi 🔔</button>
+        </div>
+      </div>
+      <p class="section-hint" id="notif-status-text">Stato notifiche browser: verifica in corso...</p>
+      <div id="notifications-list" class="card-list"></div>
+    </section>
+
+    <!-- TAB 4: OPZIONI, CONNESSIONE GITHUB PAGES & LICENZA PEFL -->
+    <section id="tab-settings" class="tab-view">
+      <div class="card">
+        <h3>Indirizzo PC Antigravity (Porta 8420)</h3>
+        <p class="text-muted">
+          Usando questa PWA da <strong>GitHub Pages</strong>, in <strong>Rete LAN</strong> o tramite <strong>Hotspot del PC</strong>, imposta o seleziona l'indirizzo IP del PC su cui gira <code>antigravity-mobile-manager</code>:
+        </p>
+        <div id="detected-ips-list" class="projects-strip" style="margin-top:8px;margin-bottom:8px;"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="url" id="settings-api-url" class="input" style="margin-bottom:0;" placeholder="http://192.168.137.1:8420" />
+          <button class="btn btn-primary" onclick="saveApiBaseFromSettings()">Salva</button>
+        </div>
+        <small class="text-muted" style="display:block;margin-top:6px;">
+          Suggerimento per GitHub Pages (HTTPS): se il browser blocca la connessione verso l'IP locale HTTP, clicca sull'icona del lucchetto/impostazioni sito nella barra indirizzi del browser e consenti <em>"Accesso alla rete locale / Contenuti non sicuri"</em>, oppure apri direttamente <code id="lan-url-box">http://192.168.137.1:8420</code> e premi <em>"Aggiungi a schermata Home"</em>.
+        </small>
+      </div>
+
+      <div class="card">
+        <h3>Modalità Conferme Remote (PreToolUse)</h3>
+        <div class="radio-group">
+          <label class="radio-item">
+            <input type="radio" name="confirmMode" value="smart" onchange="saveConfirmMode(this.value)" />
+            <div>
+              <strong>Smart (Consigliato)</strong>
+              <small>Chiede conferma per <code>run_command</code>, <code>edit_file</code> e <code>write_file</code>.</small>
+            </div>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="confirmMode" value="commands_only" onchange="saveConfirmMode(this.value)" />
+            <div>
+              <strong>Solo Comandi Terminale</strong>
+              <small>Chiede conferma solo per <code>run_command</code>.</small>
+            </div>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="confirmMode" value="auto_allow" onchange="saveConfirmMode(this.value)" />
+            <div>
+              <strong>Auto-Approva (Solo Notifiche)</strong>
+              <small>Non blocca l'agente; invia notifiche di fine task ed errori.</small>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Licenza & Attribuzione (PEFL v1.0)</h3>
+        <p class="text-muted">
+          <strong>Autore:</strong> Rubens Rainelli (<a href="mailto:rubens@rainelli.it" style="color:#93c5fd">rubens@rainelli.it</a>)<br/>
+          <strong>GitHub:</strong> <a href="https://github.com/RubensRainelli/" target="_blank" rel="noopener" style="color:#93c5fd">github.com/RubensRainelli</a> &bull; <strong>Tel:</strong> (+39) 342 811 5882<br/>
+          Distribuito sotto licenza <strong>Personal and Educational Free License (PEFL) v1.0</strong>. Uso personale ed educativo gratuito; uso aziendale/commerciale vietato senza autorizzazione scritta e fee.<br/><br/>
+          <em>Disclaimer: Antigravity Mobile Manager è un progetto indipendente creato da Rubens Rainelli e NON è sostenuto, affiliato, sponsorizzato o correlato a Google LLC. Google Antigravity e tutti i marchi citati appartengono ai rispettivi proprietari.</em>
+        </p>
+        <button class="btn btn-secondary btn-sm" onclick="showPeflModal(false)">Visualizza Testo Integrale Licenza PEFL v1.0</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL CONFIGURAZIONE IP PC (Per GitHub Pages / Hotspot PC / Cambio PC) -->
+  <div id="server-config-modal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Connetti al PC Antigravity</h3>
+        <button class="btn btn-ghost btn-sm" onclick="closeServerConfigModal()">✕</button>
+      </div>
+      <p class="section-hint">
+        Inserisci o seleziona l'indirizzo LAN o Hotspot PC mostrato nel terminale da <code>antigravity-mobile-manager</code> (porta 8420):
+      </p>
+      <div id="modal-detected-ips" class="projects-strip" style="margin-bottom:10px;"></div>
+      <form onsubmit="submitServerConfigModal(event)">
+        <input type="url" id="modal-api-url" class="input" placeholder="http://192.168.137.1:8420" required />
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeServerConfigModal()">Annulla</button>
+          <button type="submit" class="btn btn-primary">Connetti</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL NUOVA CONVERSAZIONE / NUOVO PROMPT -->
+  <div id="new-conv-modal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Avvia Nuovo Agente</h3>
+        <button class="btn btn-ghost btn-sm" onclick="closeNewConversationModal()">✕</button>
+      </div>
+      <form onsubmit="submitNewConversation(event)">
+        <label class="field-label">Titolo (opzionale)</label>
+        <input type="text" id="new-conv-title" class="input" placeholder="Es. Refactoring API Auth" />
+
+        <label class="field-label">Modello</label>
+        <select id="new-conv-model" class="input">
+          <option value="pro">Gemini Pro (Default)</option>
+          <option value="flash">Gemini Flash (Veloce)</option>
+          <option value="flash_lite">Gemini Flash Lite</option>
+        </select>
+
+        <label class="field-label">Prompt Iniziale</label>
+        <textarea id="new-conv-prompt" class="input" rows="4" placeholder="Descrivi cosa deve fare l'agente..." required></textarea>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeNewConversationModal()">Annulla</button>
+          <button type="submit" class="btn btn-primary" id="new-conv-submit">Avvia Agente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL VISUALIZZAZIONE ARTEFATTO (.md) -->
+  <div id="artifact-modal" class="modal-backdrop hidden">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h3 id="artifact-modal-title">Artefatto</h3>
+        <button class="btn btn-ghost btn-sm" onclick="closeArtifactModal()">✕</button>
+      </div>
+      <pre id="artifact-modal-content" class="artifact-viewer"></pre>
+    </div>
+  </div>
+
+  <!-- FOOTER ATTRIBUZIONE OBBLIGATORIA PEFL + NAVIGAZIONE INFERIORE -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-tab="tab-agents" onclick="switchTab('tab-agents')">
+      <span>Agenti</span>
+    </button>
+    <button class="nav-btn" data-tab="tab-confirmations" onclick="switchTab('tab-confirmations')">
+      <span>Conferme</span>
+      <span id="nav-confirm-badge" class="badge hidden">0</span>
+    </button>
+    <button class="nav-btn" data-tab="tab-notifications" onclick="switchTab('tab-notifications')">
+      <span>Notifiche</span>
+    </button>
+    <button class="nav-btn" data-tab="tab-settings" onclick="switchTab('tab-settings')">
+      <span>Opzioni & PEFL</span>
+    </button>
+  </nav>
+
+  <script src="./app.js"></script>
+</body>
+</html>

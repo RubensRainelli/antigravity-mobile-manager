@@ -1,0 +1,27 @@
+# Personal and Educational Free License (PEF License / PEFL) v1.0 - 2026-05-26
+# Copyright (c) 2026 Rubens Rainelli (rubens@rainelli.it | https://github.com/RubensRainelli/)
+
+# Rust build artifacts
+/target/
+**/*.rs.bk
+
+# PEFL v1.0 local 7-day acceptance cache files
+.pefl_accepted_*
+**/.pefl_accepted_*
+
+# Android Studio & Gradle build artifacts
+android-app/.gradle/
+android-app/build/
+android-app/app/build/
+android-app/local.properties
+android-app/.idea/
+*.iml
+*.apk
+*.aab
+
+# OS & Editor temporary files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.log

@@ -1,3 +1,7 @@
+> [!CAUTION]
+> ### 🛑 DISMISSED PROJECT
+> This project has been dismissed in favor of **[Telegram Harness Manager](https://github.com/RubensRainelli/telegram-harness-manager)**.
+
 # <img src="docs/icon.svg" alt="Antigravity Mobile Manager Logo" width="42" align="absmiddle" /> Antigravity Mobile Manager — Local LAN & PC Hotspot Remote Control, Plugin & PWA for Managing Google Antigravity from Your Smartphone (Windows & Linux)
 
 [![License: PEFL v1.0](https://raw.githubusercontent.com/RubensRainelli/pefl-license-spec/main/badges/pefl-badge-red.svg)](LICENSE)
